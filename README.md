@@ -2,14 +2,14 @@
 
 soroauth builds, signs and inspects Soroban authorization entries in Go. When a
 contract calls `require_auth()` on an address that is not the transaction's
-source account, the transaction has to carry a signed `SorobanAuthorizationEntry`
-for that address — and the signature is not over the entry, but over a
-`HashIdPreimage` whose shape depends on which credential arm is in use. The Go
-SDK ships all of those XDR types and none of the code that builds or signs those
-preimages. soroauth is that code, for all three address credential arms: legacy
-`SOROBAN_CREDENTIALS_ADDRESS`, CAP-71 `SOROBAN_CREDENTIALS_ADDRESS_V2`, and
-CAP-71 `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` including nested delegate
-trees.
+source account, the transaction has to carry a signed
+`SorobanAuthorizationEntry` for that address — and the signature is not over the
+entry, but over a `HashIdPreimage` whose shape depends on which credential arm
+is in use. The Go SDK ships all of those XDR types and none of the code that
+builds or signs those preimages. soroauth is that code, for all three address
+credential arms: legacy `SOROBAN_CREDENTIALS_ADDRESS`, CAP-71
+`SOROBAN_CREDENTIALS_ADDRESS_V2`, and CAP-71
+`SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` including nested delegate trees.
 
 ## Install
 
@@ -24,8 +24,8 @@ go install github.com/soroauth/soroauth-go/cmd/soroauth@latest
 ```
 
 Requires Go 1.25.0 or later, and `github.com/stellar/go-stellar-sdk` v0.7.3 or
-later. Which SDK versions that promise covers, and how the pin moves, is
-stated in [docs/sdk-support.md](docs/sdk-support.md).
+later. Which SDK versions that promise covers, and how the pin moves, is stated
+in [docs/sdk-support.md](docs/sdk-support.md).
 
 ## Common tasks
 
@@ -58,39 +58,39 @@ docker run --rm -e SEED=SABC... ghcr.io/soroauth/soroauth-go:v0.1.0 \
   sign --entry <base64> --valid-until 1234567 --network testnet --secret-env SEED
 ```
 
-The seed is passed the same way it is on the command line: a named
-environment variable, read only by `--secret-env`, never a flag value. The
-image itself never contains any key material, and nothing bakes a seed into
-a layer. That said, an environment variable set on a running container is
-visible to anything that can inspect that container (`docker inspect`,
-`/proc/<pid>/environ` from the host, a sidecar with the same namespace), the
-same as it would be for any other process — treat container secret injection
-with the same care you would give a plain environment variable anywhere
-else. The image is built from `Dockerfile` at the repository root by
-`.github/workflows/release.yml` on every `v*` tag push.
+The seed is passed the same way it is on the command line: a named environment
+variable, read only by `--secret-env`, never a flag value. The image itself
+never contains any key material, and nothing bakes a seed into a layer. That
+said, an environment variable set on a running container is visible to anything
+that can inspect that container (`docker inspect`, `/proc/<pid>/environ` from
+the host, a sidecar with the same namespace), the same as it would be for any
+other process — treat container secret injection with the same care you would
+give a plain environment variable anywhere else. The image is built from
+`Dockerfile` at the repository root by `.github/workflows/release.yml` on every
+`v*` tag push.
 
 ## CLI
 
 Every subcommand that produces output accepts `--json` to emit a single JSON
-object (or, for `tree`, either the JSON report or one of its two text
-renderings — see below) on stdout. On success the object carries the result
-fields; on failure it carries an `error` field. Nothing else is written to
-stdout in JSON mode, so scripts can safely pipe the output to `jq` without
-stripping usage text. `tui` is the one exception: it is an interactive
-terminal program, not something a script drives, so it has no `--json` mode.
+object (or, for `tree`, either the JSON report or one of its two text renderings
+— see below) on stdout. On success the object carries the result fields; on
+failure it carries an `error` field. Nothing else is written to stdout in JSON
+mode, so scripts can safely pipe the output to `jq` without stripping usage
+text. `tui` is the one exception: it is an interactive terminal program, not
+something a script drives, so it has no `--json` mode.
 
-| subcommand | success fields | failure field |
-|---|---|---|
-| `payload` | `preimage`, `payload` | `error` |
-| `sign` | `signed_entry` | `error` |
-| `delegates` | `wrapped_entry` | `error` |
-| `inspect` | (the `EntryInfo` struct — this was already `inspect`'s only output; `--json` is accepted for consistency and does not change it) | `error` |
-| `verify` | the report: `credential_type`, `address`, `valid_until_ledger`, `verified`, and `nodes` with a `verdict` per credential node | `error` |
-| `tree` | (the `EntryInfo` struct, same shape as `inspect`; without `--json` it prints an ASCII or DOT rendering instead) | `error` |
-| `doctor` | `checks`, `ok` | (checks carry their own `pass`/`detail`; see below) |
-| `cross-compile` | `target`, `size`, `sha256` (one per line) | `error` |
-| `completions` | `shell`, `script` | `error` |
-| `man` | `format`, `page` | `error` |
+| subcommand      | success fields                                                                                                                   | failure field                                       |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `payload`       | `preimage`, `payload`                                                                                                            | `error`                                             |
+| `sign`          | `signed_entry`                                                                                                                   | `error`                                             |
+| `delegates`     | `wrapped_entry`                                                                                                                  | `error`                                             |
+| `inspect`       | (the `EntryInfo` struct — this was already `inspect`'s only output; `--json` is accepted for consistency and does not change it) | `error`                                             |
+| `verify`        | the report: `credential_type`, `address`, `valid_until_ledger`, `verified`, and `nodes` with a `verdict` per credential node     | `error`                                             |
+| `tree`          | (the `EntryInfo` struct, same shape as `inspect`; without `--json` it prints an ASCII or DOT rendering instead)                  | `error`                                             |
+| `doctor`        | `checks`, `ok`                                                                                                                   | (checks carry their own `pass`/`detail`; see below) |
+| `cross-compile` | `target`, `size`, `sha256` (one per line)                                                                                        | `error`                                             |
+| `completions`   | `shell`, `script`                                                                                                                | `error`                                             |
+| `man`           | `format`, `page`                                                                                                                 | `error`                                             |
 
 ### Worked invocation — JSON output
 
@@ -154,11 +154,10 @@ somehow got signed twice.
 ### Verify — check an entry's signatures without submitting it
 
 Every other check is about structure. `verify` is about the signatures: it
-rebuilds the payload from the entry as it stands — including the
-expiration the entry stores — and checks each signature against it, so an entry
-that was tampered with after signing, or signed over a different expiration
-than it carries, is caught before it is submitted rather than after fees are
-paid.
+rebuilds the payload from the entry as it stands — including the expiration the
+entry stores — and checks each signature against it, so an entry that was
+tampered with after signing, or signed over a different expiration than it
+carries, is caught before it is submitted rather than after fees are paid.
 
 ```sh
 ./soroauth verify --entry <base64> --network testnet
@@ -171,28 +170,28 @@ paid.
   jq -r '.nodes[] | "\(.address) \(.verdict)"'
 ```
 
-Each credential node is one of four verdicts: `verified`, `unsigned`,
-`invalid` (a well-formed signature that does not verify), or `cannot_check`.
-The exit code is 4 unless every node verified (with `--allow-unsigned`
-tolerating unsigned nodes), so a green result means exactly what it says.
+Each credential node is one of four verdicts: `verified`, `unsigned`, `invalid`
+(a well-formed signature that does not verify), or `cannot_check`. The exit code
+is 4 unless every node verified (with `--allow-unsigned` tolerating unsigned
+nodes), so a green result means exactly what it says.
 
 **What it cannot do.** Only a classic account signature — the built-in vector
 holding one `{public_key, signature}` map — can be decided offline. A custom
 account's signature is whatever its `__check_auth` accepts, and only the
-contract can say whether a given value is valid, so any other shape is
-reported as `cannot_check` and never as `verified`. Whether the key that signed
-is actually a signer of the account, and whether enough signers signed to meet
-its threshold, are account-state questions this command cannot see and does not
+contract can say whether a given value is valid, so any other shape is reported
+as `cannot_check` and never as `verified`. Whether the key that signed is
+actually a signer of the account, and whether enough signers signed to meet its
+threshold, are account-state questions this command cannot see and does not
 claim to answer. A green result is evidence that the signatures on the entry
 commit to it; it is not a promise the transaction will succeed.
 
 ### Doctor — check the local environment for common first-run problems
 
 Most first-run problems are environmental — an unreachable RPC endpoint, a
-mistyped secret variable name, a Go toolchain older than this module needs —
-and the error from `sign` or `payload` does not say so. `doctor` checks three
-things and reports each as pass or fail: never printing a secret, only
-whether it is set.
+mistyped secret variable name, a Go toolchain older than this module needs — and
+the error from `sign` or `payload` does not say so. `doctor` checks three things
+and reports each as pass or fail: never printing a secret, only whether it is
+set.
 
 ```sh
 # Human-readable
@@ -237,8 +236,8 @@ Sample JSON output:
 {"target":{"goos":"windows","goarch":"amd64","binary":"soroauth.exe"},"size":4308992,"sha256":"d241d7f7ab8ff20215fbb254abc4eb71643408f62cffc3c0989e552801ae75e4"}
 ```
 
-On error, JSON mode emits a single object to stdout with an `error` field
-(and nothing to stderr):
+On error, JSON mode emits a single object to stdout with an `error` field (and
+nothing to stderr):
 
 ```json
 {"target":{"goos":"invalid","goarch":"target","binary":""},"error":"invalid target \"invalid/target\": unknown GOOS/GOARCH"}
@@ -246,9 +245,9 @@ On error, JSON mode emits a single object to stdout with an `error` field
 
 #### CI cross-compilation matrix
 
-The CI workflow (`.github/workflows/ci.yml`) includes a `cross-compile` job
-that runs on every push and PR. It builds for the five release targets in
-parallel with a 5-minute timeout per platform:
+The CI workflow (`.github/workflows/ci.yml`) includes a `cross-compile` job that
+runs on every push and PR. It builds for the five release targets in parallel
+with a 5-minute timeout per platform:
 
 - `linux/amd64`
 - `linux/arm64`
@@ -269,12 +268,12 @@ GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o soroauth-arm6
 
 ### Completions — shell completion for subcommands and flags
 
-`soroauth completions --shell bash|zsh|fish` prints a completion script for
-that shell on stdout. The scripts complete the subcommands, each subcommand's
-flags, and the enumerable flag values (`--shell`, `--format`, `--network`'s
-three named shorthands); fish additionally shows each flag's description in the
-tab menu. `--secret-env` is completed by name only — the shells never see or
-complete a variable's value.
+`soroauth completions --shell bash|zsh|fish` prints a completion script for that
+shell on stdout. The scripts complete the subcommands, each subcommand's flags,
+and the enumerable flag values (`--shell`, `--format`, `--network`'s three named
+shorthands); fish additionally shows each flag's description in the tab menu.
+`--secret-env` is completed by name only — the shells never see or complete a
+variable's value.
 
 Install by shell:
 
@@ -292,10 +291,10 @@ soroauth completions --shell zsh > "${fpath[1]}/_soroauth"
 soroauth completions --shell fish > ~/.config/fish/completions/soroauth.fish
 ```
 
-The scripts are generated from the same command/flag table the CLI parses, so
-a flag added to a subcommand without updating the completions spec fails the
-test suite (`TestSpecsMatchTheRealFlagSets`) rather than shipping a completion
-script that silently omits it.
+The scripts are generated from the same command/flag table the CLI parses, so a
+flag added to a subcommand without updating the completions spec fails the test
+suite (`TestSpecsMatchTheRealFlagSets`) rather than shipping a completion script
+that silently omits it.
 
 ### Version — which build am I running?
 
@@ -315,12 +314,12 @@ go: go1.25.4
 
 The three build fields are stamped at build time with `-ldflags`. The release
 workflow passes the tag, the commit and the run's date
-(`.github/workflows/release.yml`); `make build` stamps the checkout it was
-built from. A binary built without either — a plain `go build`, or a
-`go install` — reports `dev`, `unknown` and `unknown` rather than empty
-strings, so a bug report that says `dev` is telling you it did not come from a
-release. The toolchain line is read from the running binary
-(`runtime.Version()`), so it cannot drift from the toolchain that produced it.
+(`.github/workflows/release.yml`); `make build` stamps the checkout it was built
+from. A binary built without either — a plain `go build`, or a `go install` —
+reports `dev`, `unknown` and `unknown` rather than empty strings, so a bug
+report that says `dev` is telling you it did not come from a release. The
+toolchain line is read from the running binary (`runtime.Version()`), so it
+cannot drift from the toolchain that produced it.
 
 ### Man page
 
@@ -336,10 +335,10 @@ soroauth man --out soroauth.1
 ```
 
 `make man` builds the CLI and writes `bin/soroauth.1`. The page is generated
-from the same command/flag table the completion scripts come from, so it
-cannot document a flag the binary does not accept, and it carries no build
-timestamp: two builds of the same source emit identical bytes. Every `v*`
-release attaches `soroauth.1` alongside the binaries.
+from the same command/flag table the completion scripts come from, so it cannot
+document a flag the binary does not accept, and it carries no build timestamp:
+two builds of the same source emit identical bytes. Every `v*` release attaches
+`soroauth.1` alongside the binaries.
 
 ### Wasm budget — fail the build when the wasm core outgrows its ceiling
 
@@ -374,8 +373,8 @@ soroauth wasm-budget --json
 The default budget is 7 MiB (7340032 bytes), a ceiling set above the size the
 build actually produces (6211959 bytes, measured with go1.25.4 on darwin/arm64)
 rather than an aspiration. A binary exactly at the budget passes; only one
-strictly larger fails. `--prev-size` is optional, and a
-negative `delta` means the artifact shrank.
+strictly larger fails. `--prev-size` is optional, and a negative `delta` means
+the artifact shrank.
 
 Stdout carries only the result, on the over-budget path too — the diagnostic
 goes to stderr — so `soroauth wasm-budget --json | jq .exceeded` works whether
@@ -384,17 +383,17 @@ the build passed or failed. `make wasm-budget` runs it against
 
 ### Release workflow
 
-The project uses a GitHub Actions workflow (`.github/workflows/release.yml`) that
-runs on version tags (`v*`). It:
+The project uses a GitHub Actions workflow (`.github/workflows/release.yml`)
+that runs on version tags (`v*`). It:
 
-1. Regenerates the golden vectors from the pinned JS SDK and fails if they
-   drift (the same check that runs on every push).
+1. Regenerates the golden vectors from the pinned JS SDK and fails if they drift
+   (the same check that runs on every push).
 2. Builds the CLI for `linux/amd64`, `linux/arm64`, `darwin/amd64`,
    `darwin/arm64`, `windows/amd64`.
 3. Creates a GitHub Release whose notes are extracted from `CHANGELOG.md` for
    the tagged version.
-4. Attaches the built binaries and the generated man page (`soroauth.1`) to
-   the release.
+4. Attaches the built binaries and the generated man page (`soroauth.1`) to the
+   release.
 
 To cut a release:
 
@@ -450,23 +449,24 @@ if err != nil {
 op.Auth = signed // then re-simulate in enforce mode, assemble, sign, submit
 ```
 
-This example is compiled by CI as `internal/readmesnippets/quickstart.go` —
-see [Verifying README snippets](CONTRIBUTING.md#verifying-readme-snippets-compile).
+This example is compiled by CI as `internal/readmesnippets/quickstart.go` — see
+[Verifying README snippets](CONTRIBUTING.md#verifying-readme-snippets-compile).
 
 Source-account entries pass straight through untouched, so you can hand over
 everything simulation returned without sorting by arm first.
 
 ## The two-pass simulation requirement
 
-The Quickstart comment `// then re-simulate in enforce mode, assemble, sign,
-submit` is doing a lot of work. CAP-71-01 needs **two** simulation passes, and
-skipping the second is the single most common way to produce a transaction that
-builds, signs — and fails on-chain after fees are paid.
+The Quickstart comment
+`// then re-simulate in enforce mode, assemble, sign, submit` is doing a lot of
+work. CAP-71-01 needs **two** simulation passes, and skipping the second is the
+single most common way to produce a transaction that builds, signs — and fails
+on-chain after fees are paid.
 
-**Pass 1 — record mode.** The transaction carries no signatures yet, so the
-host *recording* what auth would be needed: it hands back the unsigned
-authorization entries and prices resources without having executed any account
-contract's `__check_auth`. Signing happens here.
+**Pass 1 — record mode.** The transaction carries no signatures yet, so the host
+_recording_ what auth would be needed: it hands back the unsigned authorization
+entries and prices resources without having executed any account contract's
+`__check_auth`. Signing happens here.
 
 **Pass 2 — enforce mode.** Signing the entries changes what the transaction
 costs: a signature ScVal is real memory the host has to hold and check. The
@@ -476,8 +476,8 @@ transaction must carry.
 
 **What goes wrong without pass 2.** The envelope assembled from pass 1 carries
 the recording pass's resource fee, which is too small once the signatures are
-on. The submission is then rejected on-chain for exceeding its resource budget
-— a fee-bounded failure that happens *after* fees and after your signers have
+on. The submission is then rejected on-chain for exceeding its resource budget —
+a fee-bounded failure that happens _after_ fees and after your signers have
 approved the entry, and one that reads like a signature problem when it is
 really a pricing problem.
 
@@ -486,7 +486,7 @@ really a pricing problem.
 mis-targeted address, or an unsigned node the contract insists on is caught
 locally instead of on-chain.
 
-One deliberate exception: a submission that is *meant* to be rejected skips the
+One deliberate exception: a submission that is _meant_ to be rejected skips the
 enforcing pass, which would fail locally for the very reason under test. See
 [e2e/README.md](e2e/README.md) for how the rejection scenarios handle that.
 
@@ -548,22 +548,22 @@ if err != nil {
 This example is compiled by CI as `internal/readmesnippets/twopass.go` — same
 verification story as the Quickstart above.
 
-A `Soroban RPC integration helpers` package (see
-`docs/ISSUE_BACKLOG.md`) is planned to lift this flow — both passes, assembly,
-the resource fee — into one correct, reusable call. Once it exists, this
-section will link it as the preferred alternative to hand-rolling assembly.
+A `Soroban RPC integration helpers` package (see `docs/ISSUE_BACKLOG.md`) is
+planned to lift this flow — both passes, assembly, the resource fee — into one
+correct, reusable call. Once it exists, this section will link it as the
+preferred alternative to hand-rolling assembly.
 
 Until then, `adapters/walletsdk` enforces this same discipline in code: it
 refuses to hand back a submittable envelope unless the enforcing pass ran.
 
 ## Credential types
 
-| Arm | Value | Preimage variant | Address in the signed bytes? |
-|---|---|---|---|
-| `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` | 0 | none — the envelope signature covers it | n/a |
-| `SOROBAN_CREDENTIALS_ADDRESS` | 1 | `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION` (9) | no |
-| `SOROBAN_CREDENTIALS_ADDRESS_V2` | 2 | `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION_WITH_ADDRESS` (10) | yes |
-| `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` | 3 | `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION_WITH_ADDRESS` (10), bound to the **top-level** address | yes |
+| Arm                                          | Value | Preimage variant                                                                            | Address in the signed bytes? |
+| -------------------------------------------- | ----- | ------------------------------------------------------------------------------------------- | ---------------------------- |
+| `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT`         | 0     | none — the envelope signature covers it                                                     | n/a                          |
+| `SOROBAN_CREDENTIALS_ADDRESS`                | 1     | `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION` (9)                                                   | no                           |
+| `SOROBAN_CREDENTIALS_ADDRESS_V2`             | 2     | `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION_WITH_ADDRESS` (10)                                     | yes                          |
+| `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` | 3     | `ENVELOPE_TYPE_SOROBAN_AUTHORIZATION_WITH_ADDRESS` (10), bound to the **top-level** address | yes                          |
 
 The legacy arm is defined by CAP-46-11; V2 and the delegated-signer arm by
 CAP-71-01 and CAP-71-02. V2 binds the signer's address into the signed payload,
@@ -581,19 +581,19 @@ protocol versions whose host cannot emit AddressV2.
 Each arm's CAP states the protocol version it was introduced in; a network
 running an older protocol cannot emit or accept that arm at all.
 
-| Arm | Introduced in | Source |
-|---|---|---|
-| `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` | Protocol 20 | CAP-46-11 |
-| `SOROBAN_CREDENTIALS_ADDRESS` | Protocol 20 | CAP-46-11 |
-| `SOROBAN_CREDENTIALS_ADDRESS_V2` | Protocol 27 | CAP-71-01 |
-| `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` | Protocol 27 | CAP-71-02 |
+| Arm                                          | Introduced in | Source    |
+| -------------------------------------------- | ------------- | --------- |
+| `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT`         | Protocol 20   | CAP-46-11 |
+| `SOROBAN_CREDENTIALS_ADDRESS`                | Protocol 20   | CAP-46-11 |
+| `SOROBAN_CREDENTIALS_ADDRESS_V2`             | Protocol 27   | CAP-71-01 |
+| `SOROBAN_CREDENTIALS_ADDRESS_WITH_DELEGATES` | Protocol 27   | CAP-71-02 |
 
 `ArmProtocolVersion` carries this same table in code
-(`TestArmProtocolVersionMatchesTheReadme` fails if the two drift), for a
-caller that wants to check it programmatically before pointing soroauth at
-an older network. soroauth itself makes no RPC call and does not check a
-live network's protocol version — the table exists so the requirement is
-visible before a confusing on-chain failure, not to enforce it.
+(`TestArmProtocolVersionMatchesTheReadme` fails if the two drift), for a caller
+that wants to check it programmatically before pointing soroauth at an older
+network. soroauth itself makes no RPC call and does not check a live network's
+protocol version — the table exists so the requirement is visible before a
+confusing on-chain failure, not to enforce it.
 
 ## Delegates
 
@@ -626,7 +626,7 @@ This example is compiled by CI as `internal/readmesnippets/delegates.go` — see
 
 Each delegates array is sorted by the XDR encoding of the address and checked
 for duplicates within that level, as CAP-71-01 requires; the same address at two
-*different* levels is allowed, and one `AuthorizeEntry` call fills every node
+_different_ levels is allowed, and one `AuthorizeEntry` call fills every node
 carrying that address.
 
 Because every node commits to the same payload, the expiration is fixed once any
@@ -642,8 +642,8 @@ resigned, err := soroauth.AuthorizeEntry(ctx, wrapped, soroauth.NewEd25519Signer
     validUntil, passphrase, soroauth.ForAddress(d1), soroauth.AllowResign(d1))
 ```
 
-This example is compiled by CI as `internal/readmesnippets/allowresign.go` —
-see [Verifying README snippets](CONTRIBUTING.md#verifying-readme-snippets-compile).
+This example is compiled by CI as `internal/readmesnippets/allowresign.go` — see
+[Verifying README snippets](CONTRIBUTING.md#verifying-readme-snippets-compile).
 
 `AllowResign()` with no arguments keeps its original, unscoped meaning: the
 guard is lifted for whatever address that call targets. Naming one or more
@@ -661,13 +661,13 @@ fail when a delegate has no signer, because it cannot know the account's policy.
 
 An unsigned node fails only if the account's `__check_auth` calls
 `delegate_account_auth` for that address — the host then runs that delegate's
-`__check_auth` with whatever signature the node carries (CAP-71-01,
-*Semantics → `delegate_account_auth` function*), and an empty one is not
-something a G-account delegate can authenticate with. The pattern the CAP
-recommends, and the one soroban-sdk's `delegate_auth` documentation and this
-repo's e2e fixture both follow, delegates to *every* listed signer. So unless
-you know your account's policy, treat an unsigned node as one that will fail:
-check the per-node `Signed` flags from `Inspect` before submitting.
+`__check_auth` with whatever signature the node carries (CAP-71-01, _Semantics →
+`delegate_account_auth` function_), and an empty one is not something a
+G-account delegate can authenticate with. The pattern the CAP recommends, and
+the one soroban-sdk's `delegate_auth` documentation and this repo's e2e fixture
+both follow, delegates to _every_ listed signer. So unless you know your
+account's policy, treat an unsigned node as one that will fail: check the
+per-node `Signed` flags from `Inspect` before submitting.
 
 ## Expiration
 
@@ -688,20 +688,21 @@ Zero is refused: by the rule above it is already expired, not permissive.
 
 ## CAP-85 / Protocol 28
 
-As of this release (using `github.com/stellar/go-stellar-sdk` v0.7.3), **no changes
-are required** for CAP-85 / Protocol 28 support.
+As of this release (using `github.com/stellar/go-stellar-sdk` v0.7.3), **no
+changes are required** for CAP-85 / Protocol 28 support.
 
 Evidence:
+
 - The Go SDK v0.7.3 (released 2026-08-06) does not contain Protocol 28 / CAP-85
   helpers. Its `go.mod` declares `go 1.25.0` and the XDR types are from the
   `go-xdr` module at `v0.0.0-20260806060815-dc590f17552a`, which predates
   Protocol 28.
-- Testnet is on Protocol 28 (confirmed via `stellar.expert` and RPC
-  `getLedger` responses), but the authorization entry wire format
-  (`SorobanAuthorizationEntry`, `SorobanCredentials`, `SorobanDelegateSignature`)
-  has not changed in CAP-85. CAP-85 (Protocol 28) introduces new *host
-  functions* and *diagnostic events*, not new credential arms or preimage
-  variants for Soroban authorization.
+- Testnet is on Protocol 28 (confirmed via `stellar.expert` and RPC `getLedger`
+  responses), but the authorization entry wire format
+  (`SorobanAuthorizationEntry`, `SorobanCredentials`,
+  `SorobanDelegateSignature`) has not changed in CAP-85. CAP-85 (Protocol 28)
+  introduces new _host functions_ and _diagnostic events_, not new credential
+  arms or preimage variants for Soroban authorization.
 - The soroauth codebase has been run against live testnet (see
   [e2e/RESULTS.md](e2e/RESULTS.md)) with no protocol-level failures.
 
@@ -723,7 +724,7 @@ deviates from it in four deliberate ways.
   and then fails.
 - **No default write to the top-level node**, for the same reason.
 - **The signer is never invoked when nothing matches.** The zero-match check and
-  the already-signed check run *before* signing, so a hardware wallet or remote
+  the already-signed check run _before_ signing, so a hardware wallet or remote
   signer is never asked to approve something that is about to be discarded.
 - **`AccountMultiSigner`** has no JS equivalent. It signs for a classic account
   with several keys, sorted strictly ascending by raw public key and capped at
@@ -737,12 +738,12 @@ signature would no longer verify.
 ## Remote signing over HTTP
 
 The `remote` package defines a small protocol for signing a payload over HTTP,
-and ships a reference server plus a client that satisfies `soroauth.Signer`.
-The point of the protocol is that the **preimage** is transmitted, not just the
-digest, so the remote end can inspect the whole structure it is approving
-rather than blind-signing a hash. The server recomputes SHA-256 of the
-preimage and refuses a request whose payload does not match, and the client
-attaches its context to the request so cancelling it aborts an in-flight call.
+and ships a reference server plus a client that satisfies `soroauth.Signer`. The
+point of the protocol is that the **preimage** is transmitted, not just the
+digest, so the remote end can inspect the whole structure it is approving rather
+than blind-signing a hash. The server recomputes SHA-256 of the preimage and
+refuses a request whose payload does not match, and the client attaches its
+context to the request so cancelling it aborts an in-flight call.
 
 ```go
 server := remote.NewServer(soroauth.NewEd25519Signer(signerKey))
@@ -764,41 +765,40 @@ signs instead of trusting a server for the payload. This is what makes passkey
 signing possible without a round trip that hands over the preimage.
 
 - The module lives in `cmd/soroauthwasm` and is built with `wasm/build.sh`. It
-exposes building a preimage, hashing it to a payload, writing an externally
-produced signature onto an entry, and a deterministic ed25519 path for tests.
+  exposes building a preimage, hashing it to a payload, writing an externally
+  produced signature onto an entry, and a deterministic ed25519 path for tests.
 - The `@soroauth/wasm` TypeScript wrapper (in `wasm/ts`) gives that surface real
-types, loads from bytes or a URL, and turns every failure into a thrown
-`SoroauthError` rather than a numeric code.
+  types, loads from bytes or a URL, and turns every failure into a thrown
+  `SoroauthError` rather than a numeric code.
 - `make wasm-check` proves the wasm build is byte-identical to the golden
-vectors; the package's own tests run under jsdom and against the real module.
+  vectors; the package's own tests run under jsdom and against the real module.
 
-The wrapper calls through to the same Go code as the native library, so there
-is no second implementation of the signing logic to drift.
+The wrapper calls through to the same Go code as the native library, so there is
+no second implementation of the signing logic to drift.
 
 For the full passkey flow — browser ceremony, assertion verification, and what
-is (and is not yet) proven — see [docs/passkeys.md](docs/passkeys.md).
-Replacing hand-rolled signing code with soroauth — pattern mappings, the four
-differences from the JS SDK, and how to verify the migration produced identical
-bytes — is covered in [docs/migrating.md](docs/migrating.md).
-Choosing the right signer for your threat model — in-memory, multisig, Vault,
-Ledger, KMS, remote, and passkey signers — is covered in
-[docs/signers.md](docs/signers.md).
-For a sequential three-party delegate handoff — including the shared-expiration
-rule — see [docs/multi-party-signing.md](docs/multi-party-signing.md).
+is (and is not yet) proven — see [docs/passkeys.md](docs/passkeys.md). Replacing
+hand-rolled signing code with soroauth — pattern mappings, the four differences
+from the JS SDK, and how to verify the migration produced identical bytes — is
+covered in [docs/migrating.md](docs/migrating.md). Choosing the right signer for
+your threat model — in-memory, multisig, Vault, Ledger, KMS, remote, and passkey
+signers — is covered in [docs/signers.md](docs/signers.md). For a sequential
+three-party delegate handoff — including the shared-expiration rule — see
+[docs/multi-party-signing.md](docs/multi-party-signing.md).
 
 ## Proven on testnet
 
 Every claim below is backed by a transaction that exists on chain. Full detail,
 including raw host errors, is in [e2e/RESULTS.md](e2e/RESULTS.md).
 
-| Scenario | Result | Transaction |
-|---|---|---|
-| Legacy `ADDRESS` accepted | accepted | [`6d77c01a…`](https://stellar.expert/explorer/testnet/tx/6d77c01affa11766979ad905e68d32a61a6e3daa6a110096ce7bb4698376a182) |
-| CAP-71 `ADDRESS_V2` accepted | accepted | [`566dcdac…`](https://stellar.expert/explorer/testnet/tx/566dcdacee95e2e44646099b78de46208f1b1c2b18bc0c818dcdae2349d85661) |
-| `AccountMultiSigner` meets a 2-of-2 threshold | accepted | [`9914176a…`](https://stellar.expert/explorer/testnet/tx/9914176a36dd314927aa830930a57c2bd85254a8bef659b1d88e13408a82459f) |
-| One signature does **not** meet that threshold | rejected, as it must be | [`5b0b49e7…`](https://stellar.expert/explorer/testnet/tx/5b0b49e75e958feff7152b359039996ca57f28ee371e2207633ec645a7faa6c6) |
-| Delegated signers accepted, account itself unsigned | accepted | [`5cd87e73…`](https://stellar.expert/explorer/testnet/tx/5cd87e7397b0936550875944d8f8df217ee75b438a5c706c31565c89cd2ccf2a) |
-| An unregistered delegate is refused | rejected, as it must be | [`9afda479…`](https://stellar.expert/explorer/testnet/tx/9afda479a6b5bad8cdefd4c35956aaf2a1ba15e13f394b818a3db8d392f52fdd) |
+| Scenario                                            | Result                  | Transaction                                                                                                                |
+| --------------------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Legacy `ADDRESS` accepted                           | accepted                | [`6d77c01a…`](https://stellar.expert/explorer/testnet/tx/6d77c01affa11766979ad905e68d32a61a6e3daa6a110096ce7bb4698376a182) |
+| CAP-71 `ADDRESS_V2` accepted                        | accepted                | [`566dcdac…`](https://stellar.expert/explorer/testnet/tx/566dcdacee95e2e44646099b78de46208f1b1c2b18bc0c818dcdae2349d85661) |
+| `AccountMultiSigner` meets a 2-of-2 threshold       | accepted                | [`9914176a…`](https://stellar.expert/explorer/testnet/tx/9914176a36dd314927aa830930a57c2bd85254a8bef659b1d88e13408a82459f) |
+| One signature does **not** meet that threshold      | rejected, as it must be | [`5b0b49e7…`](https://stellar.expert/explorer/testnet/tx/5b0b49e75e958feff7152b359039996ca57f28ee371e2207633ec645a7faa6c6) |
+| Delegated signers accepted, account itself unsigned | accepted                | [`5cd87e73…`](https://stellar.expert/explorer/testnet/tx/5cd87e7397b0936550875944d8f8df217ee75b438a5c706c31565c89cd2ccf2a) |
+| An unregistered delegate is refused                 | rejected, as it must be | [`9afda479…`](https://stellar.expert/explorer/testnet/tx/9afda479a6b5bad8cdefd4c35956aaf2a1ba15e13f394b818a3db8d392f52fdd) |
 
 The two rejection rows matter as much as the acceptances: they assert the host's
 specific reason, so the accepting scenarios cannot be passing by accident.
@@ -806,11 +806,11 @@ specific reason, so the accepting scenarios cannot be passing by accident.
 Offline, the golden vectors generated by `@stellar/stellar-sdk@17.1.0` assert
 that soroauth's preimage, payload hash and final signed entry are byte-identical
 to the reference, and CI regenerates them on every push to catch drift. That
-agreement is cross-checked by two other implementations: the Python `stellar-sdk`
-recomputes every vector's preimage and payload in CI (`make parity`), and the
-Rust `stellar-xdr` crate — the XDR implementation the Soroban host itself uses —
-does the same (`make parity-rust`), so a bug shared by the Go and JS
-implementations cannot hide in the vectors.
+agreement is cross-checked by two other implementations: the Python
+`stellar-sdk` recomputes every vector's preimage and payload in CI
+(`make parity`), and the Rust `stellar-xdr` crate — the XDR implementation the
+Soroban host itself uses — does the same (`make parity-rust`), so a bug shared
+by the Go and JS implementations cannot hide in the vectors.
 
 Fixed vectors only cover the cases someone thought of, so there is also a
 differential fuzzing harness: `make differential` generates a random corpus of
@@ -827,6 +827,9 @@ the golden vectors, but this library is new and has not been reviewed by anyone
 outside its author. Read the code before you sign anything valuable with it.
 
 ## Contributing
+
+Every document in the repository is listed, with one line on what it answers, in
+[docs/README.md](docs/README.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Golden vectors are never edited by hand.
 Security reports go through [SECURITY.md](SECURITY.md), not the issue tracker.
