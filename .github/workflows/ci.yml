@@ -22,6 +22,11 @@ jobs:
         with:
           go-version-file: go.mod
           check-latest: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
       - name: gofmt
         run: |
           unformatted="$(gofmt -l .)"
@@ -72,6 +77,18 @@ jobs:
       # regression fail the build instead of only a local run.
       - name: parity report regression
         run: go test -tags e2e -run TestParityReportRegression ./e2e
+      # Markdown is normalised so a prose diff stays about content rather than
+      # about re-wrapping, and the two diagrams in docs/diagrams are committed
+      # render output that must not drift from their source. Both run as steps
+      # of this job rather than as jobs of their own, because pull requests are
+      # capped at the three checks ci.yml reports and a new PR workflow would
+      # add a row. The pinned tools come from the root package-lock.json.
+      - name: install documentation tooling
+        run: npm ci
+      - name: markdown is formatted
+        run: npx prettier --check '**/*.md'
+      - name: diagrams are up to date
+        run: node docs/diagrams/render.mjs --check
 
   golden-drift:
     name: golden vectors are reproducible

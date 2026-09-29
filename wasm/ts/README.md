@@ -10,14 +10,20 @@ the native library and CLI use; there is no second implementation to drift.
 
 ## Exported Symbol Rationale & Limitations
 
-- `preimage`: Constructs and hashes authorization preimages locally. Throws for source-account entries.
+- `preimage`: Constructs and hashes authorization preimages locally. Throws for
+  source-account entries.
 - `payload`: Hashes raw base64 XDR preimages for remote signers.
-- `writeSignature`: Applies external signatures (e.g., passkeys) to specific nodes.
-- `authorizeWithSeed`: Facilitates local testing and demos with seed-based keypairs.
+- `writeSignature`: Applies external signatures (e.g., passkeys) to specific
+  nodes.
+- `authorizeWithSeed`: Facilitates local testing and demos with seed-based
+  keypairs.
 
 ## Limitations & Production Readiness
 
-This package handles client-side Soroban authorization signing and preimage generation. It does not submit transactions or estimate resource fees directly; callers must perform the two-pass simulation flow and fee computation on their backend or RPC client.
+This package handles client-side Soroban authorization signing and preimage
+generation. It does not submit transactions or estimate resource fees directly;
+callers must perform the two-pass simulation flow and fee computation on their
+backend or RPC client.
 
 ## Install
 
@@ -80,16 +86,17 @@ wasm bytes or a URL to them works, including a plain `fetch`.
 
 ## API
 
-| Method | Returns | Notes |
-|---|---|---|
-| `preimage(entryB64, validUntilLedger, networkPassphrase)` | `{ preimageXdr, payloadHex }` | Throws for a source-account entry: it has no preimage. |
-| `payload(preimageXdrB64)` | hex string | For remote signers that only receive a preimage. |
-| `writeSignature(entryB64, validUntilLedger, networkPassphrase, forAddress, signatureScvalB64)` | entry base64 XDR | Writes onto every node whose address matches. |
-| `authorizeWithSeed(entryB64, validUntilLedger, networkPassphrase, seedHex, forAddress?)` | entry base64 XDR | Deterministic ed25519 path for tests and demos. |
+| Method                                                                                         | Returns                       | Notes                                                  |
+| ---------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------ |
+| `preimage(entryB64, validUntilLedger, networkPassphrase)`                                      | `{ preimageXdr, payloadHex }` | Throws for a source-account entry: it has no preimage. |
+| `payload(preimageXdrB64)`                                                                      | hex string                    | For remote signers that only receive a preimage.       |
+| `writeSignature(entryB64, validUntilLedger, networkPassphrase, forAddress, signatureScvalB64)` | entry base64 XDR              | Writes onto every node whose address matches.          |
+| `authorizeWithSeed(entryB64, validUntilLedger, networkPassphrase, seedHex, forAddress?)`       | entry base64 XDR              | Deterministic ed25519 path for tests and demos.        |
 
-Every failure is a thrown `SoroauthError` whose message is the module's own — for
-example `preimage: soroauth: build preimage: credentials are source-account,
-which carry no signature payload`. No numeric error codes.
+Every failure is a thrown `SoroauthError` whose message is the module's own —
+for example
+`preimage: soroauth: build preimage: credentials are source-account, which carry no signature payload`.
+No numeric error codes.
 
 `loadSoroauth` options:
 

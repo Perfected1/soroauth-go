@@ -18,12 +18,22 @@ you ask otherwise.
 
 ## Context Cancellation Threat Model & Guarantees
 
-**Threat Model:** 
-Callers interacting with remote HSMs, hardware tokens, browser extensions, or custom signing RPC services rely on context cancellation and deadlines to bound latency and prevent goroutine or connection leaks. Without strict context propagation and early cancellation checks in `Signer.Sign`, a stalled remote peer, unresponsive hardware device, or slow network socket can hang client goroutines indefinitely.
+**Threat Model:** Callers interacting with remote HSMs, hardware tokens, browser
+extensions, or custom signing RPC services rely on context cancellation and
+deadlines to bound latency and prevent goroutine or connection leaks. Without
+strict context propagation and early cancellation checks in `Signer.Sign`, a
+stalled remote peer, unresponsive hardware device, or slow network socket can
+hang client goroutines indefinitely.
 
 **Guarantees:**
-- Every in-tree signer (`NewEd25519Signer`, `NewAccountMultiSigner`, `NewPasskeySigner`, and `SignerFunc`) inspects `ctx.Done()` before invoking cryptographic signing or downstream callbacks, failing immediately with `context.Canceled` or `context.DeadlineExceeded` if the context is terminated.
-- Remote or hardware signer implementations must explicitly document any underlying inability to abort ongoing hardware operations or network requests if cancellation cannot interrupt the physical device or socket.
+
+- Every in-tree signer (`NewEd25519Signer`, `NewAccountMultiSigner`,
+  `NewPasskeySigner`, and `SignerFunc`) inspects `ctx.Done()` before invoking
+  cryptographic signing or downstream callbacks, failing immediately with
+  `context.Canceled` or `context.DeadlineExceeded` if the context is terminated.
+- Remote or hardware signer implementations must explicitly document any
+  underlying inability to abort ongoing hardware operations or network requests
+  if cancellation cannot interrupt the physical device or socket.
 
 ## Scope
 
@@ -36,9 +46,9 @@ be reported privately rather than filed publicly:
 - A signature written onto a credential node other than the intended target, or
   onto a node whose address does not match.
 - An entry accepted for signing that should have been refused — an
-  already-signed node silently overwritten, a delegates array accepted
-  out of order or with duplicates, an expiration that disagrees with signatures
-  already on the entry.
+  already-signed node silently overwritten, a delegates array accepted out of
+  order or with duplicates, an expiration that disagrees with signatures already
+  on the entry.
 - Any way to make the library emit an entry whose stored expiration differs from
   the expiration that was signed over.
 - A secret reaching stdout, stderr, an error message, a log, or disk. The CLI
@@ -48,11 +58,18 @@ be reported privately rather than filed publicly:
 
 ### Remote Signer Retries and Threat Model
 
-When using remote signers via `WithRetry`, the library provides jittered exponential backoff and attempt capping strictly for transient transport errors. Signature rejections (such as signature mismatches, invalid credentials, or explicit refusals) are never retried to prevent hiding real failures or exhausting HSM/KMS quotas.
+When using remote signers via `WithRetry`, the library provides jittered
+exponential backoff and attempt capping strictly for transient transport errors.
+Signature rejections (such as signature mismatches, invalid credentials, or
+explicit refusals) are never retried to prevent hiding real failures or
+exhausting HSM/KMS quotas.
 
-**Threat model addressed:** Temporary network partitions, transient RPC/KMS downtime, and connection resets during remote signing.
+**Threat model addressed:** Temporary network partitions, transient RPC/KMS
+downtime, and connection resets during remote signing.
 
-**Explicitly not addressed:** Protection against compromised remote signers, malicious upstream KMS throttling due to high valid transaction volume, or side-channel leakage across retry attempts.
+**Explicitly not addressed:** Protection against compromised remote signers,
+malicious upstream KMS throttling due to high valid transaction volume, or
+side-channel leakage across retry attempts.
 
 Lower severity, still worth reporting privately if you are unsure: panics
 reachable from untrusted input, and denial of service through malformed XDR.
@@ -73,7 +90,8 @@ proven against a live host by the testnet scenarios in
 and being accepted by a host are not the same thing as having been audited, and
 neither rules out a class of bug that both implementations share.
 
-Judge it accordingly before signing anything valuable with it, and read the code.
+Judge it accordingly before signing anything valuable with it, and read the
+code.
 
 ## Supported versions
 

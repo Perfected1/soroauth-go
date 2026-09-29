@@ -2,7 +2,7 @@
 
 The golden vectors in `../vectors/` prove that soroauth reproduces what
 `@stellar/stellar-sdk` emits, byte for byte. They cannot prove that agreement is
-*correct*. A bug shared by the Go library and the JS reference would be frozen
+_correct_. A bug shared by the Go library and the JS reference would be frozen
 into the vectors, and every test in the repository would keep passing.
 
 This harness closes that gap by recomputing each vector's preimage and payload
@@ -53,9 +53,9 @@ produced it is the reference named in the repository.
 ## Skips are loud, and a run that checks nothing fails
 
 Some vectors have no preimage to recompute. Today those are the source-account
-vectors: `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` is authenticated by the transaction
-envelope, so the generator records an empty `preimage_xdr` and an empty
-`payload_hex`.
+vectors: `SOROBAN_CREDENTIALS_SOURCE_ACCOUNT` is authenticated by the
+transaction envelope, so the generator records an empty `preimage_xdr` and an
+empty `payload_hex`.
 
 Skipped cases are printed on **stderr**, named, with the reason, and counted
 separately in the summary. A run in which nothing was checked exits non-zero, so

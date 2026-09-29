@@ -1,13 +1,19 @@
 {
-  "name": "soroauth-go-spellcheck",
+  "name": "soroauth-go-tooling",
   "version": "0.0.0",
   "private": true,
-  "description": "Spell-check dependencies for soroauth-go documentation",
+  "description": "Documentation and diagram tooling for soroauth-go",
   "scripts": {
-    "spellcheck": "cspell --config cspell.json './**/*.md'"
+    "spellcheck": "cspell --config cspell.json './**/*.md'",
+    "format:md": "prettier --write \"**/*.md\"",
+    "format:md:check": "prettier --check \"**/*.md\"",
+    "diagrams": "node docs/diagrams/render.mjs",
+    "diagrams:check": "node docs/diagrams/render.mjs --check"
   },
   "devDependencies": {
-    "cspell": "^10.3.4"
+    "@viz-js/viz": "3.31.0",
+    "cspell": "^10.3.4",
+    "prettier": "3.9.9"
   },
   "engines": {
     "node": ">=22.12.0"

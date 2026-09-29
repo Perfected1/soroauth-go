@@ -24,10 +24,10 @@ a guide you have to translate into code yourself.
    and the ES256 signature over `authenticatorData || SHA-256(clientDataJSON)`.
    Comparing `SHA-256(clientDataJSON)` against the payload instead — which an
    earlier revision did, following an earlier revision of
-   [`docs/passkeys.md`](../../docs/passkeys.md) — can never hold: the authenticator
-   does not sign a hash of the client data as the challenge, it signs
-   `authenticatorData || SHA-256(clientDataJSON)` and carries the challenge
-   inside that JSON.
+   [`docs/passkeys.md`](../../docs/passkeys.md) — can never hold: the
+   authenticator does not sign a hash of the client data as the challenge, it
+   signs `authenticatorData || SHA-256(clientDataJSON)` and carries the
+   challenge inside that JSON.
 5. Builds the signature ScVal — `{ public_key, signature }` with the 65-byte
    uncompressed SEC1 key and the 64-byte `r || s` signature, the shape
    `soroauth.Secp256r1SignatureScVal` emits and the passkey golden vectors in
@@ -37,9 +37,9 @@ a guide you have to translate into code yourself.
 6. Rebuilds the transaction with the signed entry and simulates again in
    **enforce** mode. This pass is not optional: signing changes what the
    transaction costs, so a transaction assembled from the record-mode pass is
-   rejected on resource fees *after* the signature is already attached.
-7. Submits, polls `getTransaction`, and prints the hash, the ledger result and
-   a `stellar.expert` link.
+   rejected on resource fees _after_ the signature is already attached.
+7. Submits, polls `getTransaction`, and prints the hash, the ledger result and a
+   `stellar.expert` link.
 
 ## Who pays the fee
 
@@ -49,7 +49,8 @@ pays for. There is no way around needing a fee payer, so the page offers two:
 
 - **A relayer URL** (preferred): the page POSTs the fully assembled,
   payer-unsigned transaction and the relayer adds the fee-payer signature and
-  submits it. No secret ever enters the page. See [the relayer contract](#the-relayer-contract).
+  submits it. No secret ever enters the page. See
+  [the relayer contract](#the-relayer-contract).
 - **A testnet fee-payer secret** typed into the page: the self-contained path
   for trying it right now. It is held in memory for the single submission, never
   written to storage, never logged, and never sent anywhere but the signed
@@ -102,7 +103,7 @@ touches a real relying party.
 browser, a platform authenticator, and a deployed passkey wallet contract on
 testnet, none of which exist in the build environment.
 
-What *is* checked is `app.test.mjs`, which runs in CI and locally
+What _is_ checked is `app.test.mjs`, which runs in CI and locally
 (`node examples/browser-passkey/app.test.mjs`, or `make demo-check` after
 `cd testdata/gen && npm ci`): the SDK calls the flow makes, the credential-arm
 walk, the explorer link, the DER-to-compact conversion, and the signature ScVal
@@ -124,7 +125,7 @@ as, at best, an unexplained `TypeError`:
   accepted spellings and four rejections.
 
 If you run the page and it fails past those checks, that is a bug report worth
-filing — the parts that *are* proven (`preimage` and `writeSignature` against
+filing — the parts that _are_ proven (`preimage` and `writeSignature` against
 the golden vectors and a live testnet scenario) live in the rest of this
 repository, so a failure here most likely points at the ceremony or the wallet
 contract, not the core.

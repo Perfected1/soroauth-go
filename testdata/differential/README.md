@@ -13,11 +13,11 @@ and the `int64` edges, three network passphrases — and records the
 `HashIdPreimage` and payload soroauth derives from each one. Every recorded
 payload is then recomputed by two independent implementations:
 
-| Implementation | Reference | Pinned by |
-|---|---|---|
-| Go (the recorder) | this library | `go.mod` |
-| JS | `@stellar/stellar-sdk` | `package.json`, `package-lock.json` |
-| Python | `stellar-sdk` (PyPI) | `../parity-python/requirements.txt` |
+| Implementation    | Reference              | Pinned by                           |
+| ----------------- | ---------------------- | ----------------------------------- |
+| Go (the recorder) | this library           | `go.mod`                            |
+| JS                | `@stellar/stellar-sdk` | `package.json`, `package-lock.json` |
+| Python            | `stellar-sdk` (PyPI)   | `../parity-python/requirements.txt` |
 
 All three have to agree. **A divergence is a release blocker, not a test
 flake.** It means one of the implementations is wrong, and any of them being
@@ -38,10 +38,10 @@ python3 ../parity-python/parity.py --vectors corpus     # Python recomputes it
 ```
 
 The Python side is the existing parity harness
-(`testdata/parity-python/parity.py`) pointed at this corpus with `--vectors`,
-so there is only one Python recomputation in the repository rather than two
-that could drift apart. It needs the pinned SDK; `make differential` installs
-it into `.venv-parity`.
+(`testdata/parity-python/parity.py`) pointed at this corpus with `--vectors`, so
+there is only one Python recomputation in the repository rather than two that
+could drift apart. It needs the pinned SDK; `make differential` installs it into
+`.venv-parity`.
 
 ## What the corpus contains
 

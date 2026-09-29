@@ -72,7 +72,11 @@ func TestArmProtocolVersionCoversEveryKnownArm(t *testing.T) {
 
 // readmeProtocolTableRow matches one data row of the README's "Protocol
 // version support" table: the arm name in backticks, then "Protocol N".
-var readmeProtocolTableRow = regexp.MustCompile("`([A-Z_0-9]+)` \\| Protocol (\\d+)")
+// The whitespace around the cell separator is not fixed, because README.md is
+// formatted by Prettier (.prettierrc.json), which pads every cell in a column
+// to the width of that column's longest entry — so the gap before the "|"
+// varies with the longest arm name in the table.
+var readmeProtocolTableRow = regexp.MustCompile("`([A-Z_0-9]+)`\\s*\\|\\s*Protocol (\\d+)")
 
 // armNameByWireConstant maps the wire-format constant names the README
 // table names (SOROBAN_CREDENTIALS_*) to the CredentialType* string this

@@ -12,9 +12,9 @@ account; the signatures do not authorize separate parts of the invocation.
 - Start with an **unsigned** simulated authorization entry for an account that
   supports delegated authentication. Keep the invocation and top-level account
   address unchanged throughout this process.
-- Agree out of band on the three delegate addresses, their order of handoff,
-  the network, and the exact invocation being approved. `soroauth inspect`
-  reports structure; it does not explain what the invocation does.
+- Agree out of band on the three delegate addresses, their order of handoff, the
+  network, and the exact invocation being approved. `soroauth inspect` reports
+  structure; it does not explain what the invocation does.
 - Each delegate must confirm that the address they are asked to sign is theirs
   and is accepted by the top-level account's authentication policy.
 
@@ -59,8 +59,8 @@ printf '%s\n' "$WRAPPED_ENTRY_B64"
 
 Send the wrapped entry, `VALID_UNTIL`, network name (`testnet` here), and the
 expected delegate address to Party A through your normal handoff channel. The
-base64 entry is not a secret, but it is an authorization artifact: distribute
-it only to the intended participants.
+base64 entry is not a secret, but it is an authorization artifact: distribute it
+only to the intended participants.
 
 If the entry starts with legacy `ADDRESS` credentials, wrapping converts it to
 the address-bound delegates arm. Do not wrap after anyone has signed: changing
@@ -89,14 +89,14 @@ printf '%s\n' "$SIGNED_BY_A"
 ```
 
 Party A returns the complete `SIGNED_BY_A` base64 value and the unchanged
-expiration ledger to Party B. The signature is added to Party A's matching
-node; the other nodes remain as they were.
+expiration ledger to Party B. The signature is added to Party A's matching node;
+the other nodes remain as they were.
 
 ## Party B signs
 
 Party B receives Party A's **updated** entry, not the original wrapped entry.
-Party B verifies the same invocation, network, expiration, and their own
-address before signing:
+Party B verifies the same invocation, network, expiration, and their own address
+before signing:
 
 ```bash
 set -euo pipefail
@@ -150,27 +150,26 @@ printf '%s' "$SIGNED_BY_C" |
 
 `--allow-unsigned` permits the top-level account's `Void` signature, which
 CAP-71-01 allows when delegates authenticate. It does not make an unsigned
-delegate acceptable to the account's policy. The account contract still
-decides which delegates it calls `delegate_auth` for.
+delegate acceptable to the account's policy. The account contract still decides
+which delegates it calls `delegate_auth` for.
 
 ## Keep expiration fixed
 
-All delegate nodes sign the same payload, and for the delegates arm that
-payload includes the top-level account and signature expiration (CAP-71-01).
-The host accepts the expiration ledger itself; it rejects the entry once the
-current ledger is greater than the expiration. It also rejects an expiration
-above the network's `max_live_until_ledger`, which the CLI cannot determine
-offline.
+All delegate nodes sign the same payload, and for the delegates arm that payload
+includes the top-level account and signature expiration (CAP-71-01). The host
+accepts the expiration ledger itself; it rejects the entry once the current
+ledger is greater than the expiration. It also rejects an expiration above the
+network's `max_live_until_ledger`, which the CLI cannot determine offline.
 
-Do not have each participant run `--valid-for`: each invocation can resolve to
-a different absolute ledger. Pass the coordinator's exact `VALID_UNTIL` value
-to every signer. If a signature already exists and a later signer supplies a
-different expiration, `soroauth sign` refuses with an invalid-expiration
-error. Do not bypass that guard: changing the expiration would invalidate the
+Do not have each participant run `--valid-for`: each invocation can resolve to a
+different absolute ledger. Pass the coordinator's exact `VALID_UNTIL` value to
+every signer. If a signature already exists and a later signer supplies a
+different expiration, `soroauth sign` refuses with an invalid-expiration error.
+Do not bypass that guard: changing the expiration would invalidate the
 signatures already collected. Choose a ledger that leaves time for all handoffs
 while remaining within the network's allowed maximum.
 
 After collecting signatures, the transaction coordinator must run an enforce
-simulation with the signed entry, then assemble and submit the transaction
-using that simulation's result. Signing changes the resources required; the
+simulation with the signed entry, then assemble and submit the transaction using
+that simulation's result. Signing changes the resources required; the
 record-mode simulation is not ready to submit.

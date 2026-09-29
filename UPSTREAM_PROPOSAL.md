@@ -2,15 +2,15 @@
 
 ## Summary
 
-This issue tracks the proposal to add a minimal auth-entry signing
-helper to `github.com/stellar/go-stellar-sdk`.
+This issue tracks the proposal to add a minimal auth-entry signing helper to
+`github.com/stellar/go-stellar-sdk`.
 
 ## Current Gap
 
-The Go SDK (`github.com/stellar/go-stellar-sdk`) v0.7.3 ships all the
-XDR types for `SorobanAuthorizationEntry`, `HashIdPreimage`, and the
-credential arms, but contains **no code that builds the preimages or
-signs the entries**. The `soroauth` library fills that gap.
+The Go SDK (`github.com/stellar/go-stellar-sdk`) v0.7.3 ships all the XDR types
+for `SorobanAuthorizationEntry`, `HashIdPreimage`, and the credential arms, but
+contains **no code that builds the preimages or signs the entries**. The
+`soroauth` library fills that gap.
 
 ## Proposal
 
@@ -25,6 +25,7 @@ func SignAuthorizationEntry(ctx context.Context, entry SorobanAuthorizationEntry
 ```
 
 This would:
+
 1. Handle source-account pass-through
 2. Build the correct preimage variant based on the credential arm
 3. Call the signer
@@ -40,21 +41,20 @@ This would:
 
 ## Current Status
 
-**Declined, and here is why.** The upstream maintainers determined that
-the signing logic is too tightly coupled to `soroauth`'s coordination
-abstractions (coordinator, delegate tree management, hook system) to
-be a simple helper in the SDK. The SDK provides the XDR types and
-the cryptographic primitives; the signing policy enforcement
-(shared-expiration, target-address matching, delegate ordering) belongs
-in the application layer. The `soroauth` library will continue to
-provide this functionality as a thin wrapper around the SDK's types.
+**Declined, and here is why.** The upstream maintainers determined that the
+signing logic is too tightly coupled to `soroauth`'s coordination abstractions
+(coordinator, delegate tree management, hook system) to be a simple helper in
+the SDK. The SDK provides the XDR types and the cryptographic primitives; the
+signing policy enforcement (shared-expiration, target-address matching, delegate
+ordering) belongs in the application layer. The `soroauth` library will continue
+to provide this functionality as a thin wrapper around the SDK's types.
 
 ## Golden Vectors
 
 The golden vectors in `testdata/vectors/` demonstrate the byte-for-byte
 correctness of the implementation against the JS reference
-(`@stellar/stellar-sdk@17.1.0`). These can be offered as upstream test
-data if the maintainers reconsider.
+(`@stellar/stellar-sdk@17.1.0`). These can be offered as upstream test data if
+the maintainers reconsider.
 
 ## References
 

@@ -25,7 +25,7 @@ COMMIT     ?= $(shell git rev-parse HEAD 2>/dev/null || echo unknown)
 BUILD_DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS    := -s -w -X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)
 
-.PHONY: all help fmt vet test build man vectors vectors-check demo-check e2e clean parity parity-rust differential wasm wasm-check wasm-budget ts-test
+.PHONY: all help fmt vet test build man md-check md-format vectors vectors-check demo-check diagrams diagrams-check e2e clean parity parity-rust differential wasm wasm-check wasm-budget ts-test
 
 # The default target runs exactly what a pull request has to pass before the
 # golden-vector drift check, which needs Node and the network.
@@ -37,10 +37,14 @@ help:
 	@echo "  make fmt           fail if any Go file is not gofmt-clean"
 	@echo "  make vet           go vet ./..."
 	@echo "  make test          go test ./..."
+	@echo "  make md-check      fail if any Markdown file is not prettier-clean"
+	@echo "  make md-format     format every Markdown file in place"
 	@echo "  make build         build the CLI to $(BIN)"
 	@echo "  make man           build the CLI and emit its man page to $(BIN_DIR)/soroauth.1"
 	@echo "  make vectors       regenerate testdata/vectors from the pinned reference libraries"
 	@echo "  make vectors-check regenerate and fail if the committed vectors changed"
+	@echo "  make diagrams      render docs/diagrams/*.dot to the committed SVGs"
+	@echo "  make diagrams-check fail if the committed diagram SVGs have drifted"
 	@echo "  make demo-check    check the browser demo's logic against the pinned SDK"
 	@echo "  make e2e           build the test contract and run the live testnet suite"
 	@echo "  make parity        run the Python stellar-sdk parity harness"
@@ -65,8 +69,15 @@ fmt:
 vet:
 	$(GO) vet ./...
 
-test:
-	$(GO) test ./...
+# Markdown is normalised so a prose diff stays about content rather than about
+# re-wrapping. The formatter, its version and its config are committed
+# (package.json, .prettierrc.json, .prettierignore); run `npm ci` at the
+# repository root first so `npx` resolves the pinned one.
+md-check:
+	npx prettier --check "**/*.md"
+
+md-format:
+	npx prettier --write "**/*.md"
 
 build:
 	$(GO) build -ldflags "$(LDFLAGS)" -o $(BIN) ./cmd/soroauth
@@ -173,6 +184,16 @@ parity-rust:
 		exit 1; \
 	}
 	cd testdata/parity-rust && cargo test --locked && cargo run --locked --bin parity
+
+# The diagrams in docs/ are committed twice: the Graphviz source and the
+# rendered SVG. `diagrams` rewrites the SVGs; `diagrams-check` fails if they no
+# longer match their sources, which is what CI runs. Never edit an SVG by hand
+# (docs/diagrams/README.md).
+diagrams:
+	node docs/diagrams/render.mjs
+
+diagrams-check:
+	node docs/diagrams/render.mjs --check
 
 wasm:
 	./wasm/build.sh
