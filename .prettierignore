@@ -1,3 +1,10 @@
+# CLAUDE.md is the build brief this repository was written against. It is a
+# historical record of the instructions, not living prose, and it is not to be
+# modified — reformatting it churns the one file whose wording should stay as
+# it was given. Prettier also expands its markdown table separators into long
+# dash runs, which makes it harder to read, not easier.
+CLAUDE.md
+
 # Generated, vendored or build output. Formatting it would turn a rebuild into a
 # documentation diff, and none of it is hand-written prose.
 node_modules
