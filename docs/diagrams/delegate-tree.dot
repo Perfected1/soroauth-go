@@ -1,0 +1,28 @@
+// The CAP-71-01 delegate tree, as a committed Graphviz source. Render it to
+// delegate-tree.svg with `make diagrams` (docs/diagrams/render.mjs). The same
+// tree is kept as an ASCII fallback in ARCHITECTURE.md for terminal readers.
+//
+// bgcolor="white" is deliberate: a white page keeps the dark text readable
+// whether GitHub renders this in a light or a dark theme.
+digraph delegate_tree {
+  graph [bgcolor="white", rankdir=TB, ranksep=0.45, nodesep=0.5, pad=0.3,
+         fontname="Helvetica",
+         label="Every node signs one payload, bound to the top-level address.",
+         labelloc="b", fontsize=10, fontcolor="#5a5a5a"];
+  node  [shape=box, style="rounded,filled", fillcolor="#eef7ee",
+         color="#4a7a4a", fontname="Helvetica", fontsize=11,
+         margin="0.16,0.09"];
+  edge  [color="#4a6fa5", fontname="Helvetica", fontsize=10];
+
+  account [label="account\n(top-level, signature may be ScvVoid)",
+           fillcolor="#eef4ff", color="#4a6fa5"];
+  a  [label="delegate A"];
+  a1 [label="delegate A1\n(nested, same payload)"];
+  b  [label="delegate B"];
+
+  account -> a;
+  a       -> a1;
+  account -> b;
+
+  { rank=same; a; b; }
+}

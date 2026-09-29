@@ -1,0 +1,36 @@
+// The signing flow, as a committed Graphviz source. Render it to
+// signing-flow.svg with `make diagrams` (docs/diagrams/render.mjs). The same
+// flow is kept as an ASCII fallback in ARCHITECTURE.md for terminal readers.
+//
+// bgcolor="white" is deliberate: a white page keeps the dark text readable
+// whether GitHub renders this in a light or a dark theme.
+digraph signing_flow {
+  graph [bgcolor="white", rankdir=TB, ranksep=0.45, nodesep=0.4, pad=0.3,
+         fontname="Helvetica"];
+  node  [shape=box, style="rounded,filled", fillcolor="#eef4ff",
+         color="#4a6fa5", fontname="Helvetica", fontsize=11,
+         margin="0.16,0.09"];
+  edge  [color="#4a6fa5", fontname="Helvetica", fontsize=10];
+
+  record   [label="simulateTransaction (record mode)"];
+  unsigned [label="unsigned entries"];
+  preimage [label="Preimage(entry, validUntil, passphrase)"];
+  hashid   [label="HashIdPreimage"];
+  payload  [label="Payload() = SHA-256"];
+  sign     [label="Signer.Sign(ctx, preimage, payload)"];
+  scval    [label="ScVal", fillcolor="#eef7ee", color="#4a7a4a"];
+  write    [label="AuthorizeEntry writes the ScVal onto\nevery credential node\nwhose address == target"];
+  enforce  [label="simulateTransaction (enforce mode)"];
+  submit   [label="assemble, sign envelope, submit"];
+
+  record   -> unsigned;
+  unsigned -> preimage;
+  preimage -> hashid;
+  hashid   -> payload [label=" MarshalBinary"];
+  payload  -> sign;
+  sign     -> scval   [label=" returns"];
+  sign     -> write;
+  scval    -> write   [style=dashed];
+  write    -> enforce;
+  enforce  -> submit  [label=" the enforcing pass sizes the signed entries"];
+}
