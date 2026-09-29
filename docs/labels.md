@@ -1,0 +1,84 @@
+# Issue labels
+
+Contributors pick work by label. Two label families carry the meaning: a
+**complexity** label, which says how much Soroban-specific knowledge an issue
+needs and is what its points are counted from, and an **area** label, which says
+which part of the tree the change lands in. A third family names the kind of
+change, and one program label marks an issue as part of a Stellar Wave.
+
+The values below are the ones the repository's own issue tooling creates and
+accepts, so they are the source of truth rather than a description written after
+the fact: `scripts/wave9_issues.py` (`LABELS`, lines 29-38) and
+`scripts/create-issues.sh` (the `create_label` calls, lines 68-75).
+
+## Complexity
+
+Complexity is a rough guide to how much protocol or codebase knowledge an issue
+needs, not how long it takes. It is also the value the points come from:
+`scripts/wave9_issues.py` maps `high` to 200 points, `medium` to 150 and
+`trivial` to 100 (line 27).
+
+| Label                | Points | Means                                                                                              |
+| -------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| `complexity:trivial` | 100    | Small and self-contained; no protocol knowledge required.                                          |
+| `complexity:medium`  | 150    | A standard feature or an involved fix; needs familiarity with the codebase or the auth flow.       |
+| `complexity:high`    | 200    | A new subsystem, an integration, or a refactor; touches signing, the wire format, or cryptography. |
+
+These three are the only values the backlog tooling accepts. Issue creation
+aborts on anything else rather than guessing, because a missing or misspelt
+complexity label would silently drop the issue out of the points accounting
+(`scripts/create-issues.sh`, the `case "$complexity"` block).
+
+## Area
+
+The area label answers "where in this repository, and which reviewer". Each area
+maps to the section of `docs/ISSUE_BACKLOG.md` its issues were written in.
+
+| Label               | Covers                                             |
+| ------------------- | -------------------------------------------------- |
+| `area:signers`      | Signer implementations and the `Signer` interface. |
+| `area:testing`      | Golden vectors, fuzzing, parity, benchmarks, e2e.  |
+| `area:api`          | The exported library API.                          |
+| `area:docs`         | Documentation and guides.                          |
+| `area:tooling`      | The CLI, CI, scripts, release automation.          |
+| `area:integrations` | WASM, browser, wallets, RPC, fixture contracts.    |
+| `area:protocol`     | CAP support and protocol compatibility.            |
+
+## Type
+
+Type labels say what kind of report or change an issue is. The issue templates
+apply them automatically, so a reporter does not choose one by hand:
+
+| Label         | Applied by                            | Means                                                                                         |
+| ------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `bug`         | `.github/ISSUE_TEMPLATE/bug.yml`      | Something soroauth does that it should not, or fails to do.                                   |
+| `enhancement` | `.github/ISSUE_TEMPLATE/feature.yml`  | Something soroauth should be able to do and cannot.                                           |
+| `security`    | `.github/ISSUE_TEMPLATE/security.yml` | A request redirected to private reporting; the label marks that the public template was used. |
+
+A signature-correctness or key-handling problem is not a public `bug`: it goes
+through a private Security Advisory, per [SECURITY.md](../SECURITY.md).
+
+## Program
+
+`Stellar Wave` marks an issue as part of a Drips Stellar Wave, the program the
+complexity points are counted by; the backlog tooling in `scripts/` exists to
+publish the Wave's issues. It is applied to the issue when the Wave is
+assembled.
+
+## Who applies them
+
+- The **maintainer** creates the labels and sets the complexity and area labels
+  when an issue is written or triaged. The two label families are created and
+  attached by `scripts/create-issues.sh` and `scripts/wave9_issues.py`, and by
+  hand for issues that do not come from the backlog.
+- The **issue templates** apply the type label when a reporter files a `bug`,
+  `enhancement` or `security` issue.
+- **Contributors** do not need to set labels. If you think an issue is
+  mislabelled, say so in a comment on the issue rather than relabelling it
+  yourself.
+
+**The maintainer has final say on complexity.** The label on an issue is the
+maintainer's call, and it can be revised at triage. If, once you are in the
+code, an issue turns out to be materially larger than its label suggests, say so
+on the issue rather than absorbing the difference silently — that is the same
+rule the Wave issue bodies carry, and it is how the label gets corrected.
